@@ -15,14 +15,14 @@ import renderSymbol from "./fields/renderSymbol"
 
 export default function renderContentType(contentType: ContentType, localization: boolean): string {
   const name = renderContentTypeId(contentType.sys.id)
-  const contentTypeFields = renderContentTypeFields(contentType.fields, localization)
+  const fields = renderContentTypeFields(contentType.fields, localization)
   const sys = renderSys(contentType.sys)
-  const fields = [...contentTypeFields, sys].join("\n\n")
 
   return `
-    ${descriptionComment(contentType.description)}
+    ${renderInterface({ name: `${name}Fields`, fields })}
 
-    ${renderInterface({ name: `${name}`, fields })}
+    ${descriptionComment(contentType.description)}
+    ${renderInterface({ name, extension: `Entry<${name}Fields>`, fields: sys })}
   `
 }
 
@@ -34,7 +34,7 @@ function descriptionComment(description: string | undefined) {
   return ""
 }
 
-function renderContentTypeFields(fields: Field[], localization: boolean): string[] {
+function renderContentTypeFields(fields: Field[], localization: boolean): string {
   return fields
     .filter(field => !field.omitted)
     .map<string>(field => {
@@ -54,15 +54,24 @@ function renderContentTypeFields(fields: Field[], localization: boolean): string
 
       return renderField(field, functionMap[field.type](field), localization)
     })
+    .join("\n\n")
 }
 
 function renderSys(sys: Sys) {
   return `
-    id: string;
-    type: string;
-    __typename: '${sys.id}';
-    node_locale: string;
-    createdAt: string;
-    updatedAt: string;
+    sys: {
+      id: string;
+      type: string;
+      createdAt: string;
+      updatedAt: string;
+      locale: string;
+      contentType: {
+        sys: {
+          id: '${sys.id}';
+          linkType: 'ContentType';
+          type: 'Link';
+        }
+      }
+    }
   `
 }
