@@ -73,6 +73,14 @@ function __generator(thisArg, body) {
     }
 }
 
+function __spreadArrays() {
+    for (var s = 0, i = 0, il = arguments.length; i < il; i++) s += arguments[i].length;
+    for (var r = Array(s), k = 0, i = 0; i < il; i++)
+        for (var a = arguments[i], j = 0, jl = a.length; j < jl; j++, k++)
+            r[k] = a[j];
+    return r;
+}
+
 function renderUnion(name, values) {
     return "\n    export type " + name + " = " + renderUnionValues(values) + ";\n  ";
 }
@@ -202,9 +210,10 @@ function renderRichText(field) {
 
 function renderContentType(contentType, localization) {
     var name = renderContentTypeId(contentType.sys.id);
-    var fields = renderContentTypeFields(contentType.fields, localization);
+    var contentTypeFields = renderContentTypeFields(contentType.fields, localization);
     var sys = renderSys(contentType.sys);
-    return "\n    " + renderInterface({ name: name + "Fields", fields: fields }) + "\n\n    " + descriptionComment$1(contentType.description) + "\n    " + renderInterface({ name: name, extension: "Entry<" + name + "Fields>", fields: sys }) + "\n  ";
+    var fields = __spreadArrays([sys], contentTypeFields).join("\n\n");
+    return "\n    " + descriptionComment$1(contentType.description) + "\n\n    " + renderInterface({ name: "" + name, fields: fields }) + "\n  ";
 }
 function descriptionComment$1(description) {
     if (description) {
@@ -230,11 +239,10 @@ function renderContentTypeFields(fields, localization) {
             Text: renderSymbol,
         };
         return renderField(field, functionMap[field.type](field), localization);
-    })
-        .join("\n\n");
+    });
 }
 function renderSys(sys) {
-    return "\n    sys: {\n      id: string;\n      type: string;\n      createdAt: string;\n      updatedAt: string;\n      locale: string;\n      contentType: {\n        sys: {\n          id: '" + sys.id + "';\n          linkType: 'ContentType';\n          type: 'Link';\n        }\n      }\n    }\n  ";
+    return "\n    id: string;\n\n    __typename: '" + sys.id + "';\n\n    node_locale: string;\n\n    createdAt: string;\n\n    updatedAt: string;\n  ";
 }
 
 function renderDefaultLocale(locales) {
@@ -249,7 +257,7 @@ function renderDefaultLocale(locales) {
 function renderLocalizedTypes(localization) {
     if (!localization)
         return null;
-    return "\n    export type LocalizedField<T> = Partial<Record<LOCALE_CODE, T>>\n  \n    // We have to use our own localized version of Asset because of a bug in contentful https://github.com/contentful/contentful.js/issues/208\n    export interface Asset {\n      sys: Sys\n      fields: {\n        title: LocalizedField<string>\n        description: LocalizedField<string>\n        file: LocalizedField<{\n          url: string\n          details: {\n            size: number\n            image?: {\n              width: number\n              height: number\n            }\n          }\n          fileName: string\n          contentType: string\n        }>\n      }\n      toPlainObject(): object\n    }\n  ";
+    return "\n    export type LocalizedField<T> = Partial<Record<LOCALE_CODE, T>>\n  \n    export interface Asset {\n        title: string\n        description: string\n        file: {\n          url: string\n          details: {\n            size: number\n            image?: {\n              width: number\n              height: number\n            }\n          }\n          fileName: string\n          contentType: string\n        }\n    }\n  ";
 }
 
 function renderNamespace(source, namespace) {

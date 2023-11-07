@@ -1,4 +1,11 @@
 "use strict";
+var __spreadArrays = (this && this.__spreadArrays) || function () {
+    for (var s = 0, i = 0, il = arguments.length; i < il; i++) s += arguments[i].length;
+    for (var r = Array(s), k = 0, i = 0; i < il; i++)
+        for (var a = arguments[i], j = 0, jl = a.length; j < jl; j++, k++)
+            r[k] = a[j];
+    return r;
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 var renderInterface_1 = require("../typescript/renderInterface");
 var renderField_1 = require("./renderField");
@@ -13,9 +20,10 @@ var renderRichText_1 = require("./fields/renderRichText");
 var renderSymbol_1 = require("./fields/renderSymbol");
 function renderContentType(contentType, localization) {
     var name = renderContentTypeId_1.default(contentType.sys.id);
-    var fields = renderContentTypeFields(contentType.fields, localization);
+    var contentTypeFields = renderContentTypeFields(contentType.fields, localization);
     var sys = renderSys(contentType.sys);
-    return "\n    " + renderInterface_1.default({ name: name + "Fields", fields: fields }) + "\n\n    " + descriptionComment(contentType.description) + "\n    " + renderInterface_1.default({ name: name, extension: "Entry<" + name + "Fields>", fields: sys }) + "\n  ";
+    var fields = __spreadArrays([sys], contentTypeFields).join("\n\n");
+    return "\n    " + descriptionComment(contentType.description) + "\n\n    " + renderInterface_1.default({ name: "" + name, fields: fields }) + "\n  ";
 }
 exports.default = renderContentType;
 function descriptionComment(description) {
@@ -42,10 +50,9 @@ function renderContentTypeFields(fields, localization) {
             Text: renderSymbol_1.default,
         };
         return renderField_1.default(field, functionMap[field.type](field), localization);
-    })
-        .join("\n\n");
+    });
 }
 function renderSys(sys) {
-    return "\n    sys: {\n      id: string;\n      type: string;\n      createdAt: string;\n      updatedAt: string;\n      locale: string;\n      contentType: {\n        sys: {\n          id: '" + sys.id + "';\n          linkType: 'ContentType';\n          type: 'Link';\n        }\n      }\n    }\n  ";
+    return "\n    id: string;\n\n    __typename: '" + sys.id + "';\n\n    node_locale: string;\n\n    createdAt: string;\n\n    updatedAt: string;\n  ";
 }
 //# sourceMappingURL=renderContentType.js.map
