@@ -17,7 +17,7 @@ export default function renderContentType(contentType: ContentType, localization
   const name = renderContentTypeId(contentType.sys.id)
   const contentTypeFields = renderContentTypeFields(contentType.fields, localization)
   const sys = renderSys(contentType.sys)
-  const fields = [...contentTypeFields, sys].join("\n\n")
+  const fields = [sys, ...contentTypeFields].join("\n\n")
 
   return `
     ${descriptionComment(contentType.description)}
@@ -59,10 +59,13 @@ function renderContentTypeFields(fields: Field[], localization: boolean): string
 function renderSys(sys: Sys) {
   return `
     id: string;
-    type: string;
+
     __typename: '${sys.id}';
+
     node_locale: string;
+
     createdAt: string;
+
     updatedAt: string;
   `
 }

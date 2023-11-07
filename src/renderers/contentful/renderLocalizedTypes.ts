@@ -5,13 +5,10 @@ export default function renderLocalizedTypes(localization: boolean) {
   return `
     export type LocalizedField<T> = Partial<Record<LOCALE_CODE, T>>
   
-    // We have to use our own localized version of Asset because of a bug in contentful https://github.com/contentful/contentful.js/issues/208
     export interface Asset {
-      sys: Sys
-      fields: {
-        title: LocalizedField<string>
-        description: LocalizedField<string>
-        file: LocalizedField<{
+        title: string
+        description: string
+        file: {
           url: string
           details: {
             size: number
@@ -22,9 +19,7 @@ export default function renderLocalizedTypes(localization: boolean) {
           }
           fileName: string
           contentType: string
-        }>
-      }
-      toPlainObject(): object
+        }
     }
   `
 }
