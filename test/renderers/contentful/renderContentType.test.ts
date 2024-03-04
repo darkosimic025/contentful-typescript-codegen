@@ -56,83 +56,62 @@ describe("renderContentType()", () => {
 
   it("works with miscellaneous field types", () => {
     expect(format(renderContentType(contentType, false))).toMatchInlineSnapshot(`
-            "export interface IMyContentTypeFields {
-              /** Symbol Field™ */
-              symbolField?: string | undefined;
+      "export interface ContentfulMyContentType {
+        id: string;
 
-              /** Array field */
-              arrayField: (\\"one\\" | \\"of\\" | \\"the\\" | \\"above\\")[];
-            }
+        __typename: \\"myContentType\\";
 
-            export interface IMyContentType extends Entry<IMyContentTypeFields> {
-              sys: {
-                id: string,
-                type: string,
-                createdAt: string,
-                updatedAt: string,
-                locale: string,
-                contentType: {
-                  sys: {
-                    id: \\"myContentType\\",
-                    linkType: \\"ContentType\\",
-                    type: \\"Link\\"
-                  }
-                }
-              };
-            }"
-        `)
+        node_locale: string;
+
+        createdAt: string;
+
+        updatedAt?: string;
+
+        /** Symbol Field™ */
+        symbolField?: string | undefined;
+
+        /** Array field */
+        arrayField: (\\"one\\" | \\"of\\" | \\"the\\" | \\"above\\")[];
+      }"
+    `)
   })
 
   it("supports descriptions", () => {
     expect(format(renderContentType(contentTypeWithDescription, false))).toMatchInlineSnapshot(`
-      "export interface IMyContentTypeFields {}
+      "/** This is a description */
 
-      /** This is a description */
+      export interface ContentfulMyContentType {
+        id: string;
 
-      export interface IMyContentType extends Entry<IMyContentTypeFields> {
-        sys: {
-          id: string,
-          type: string,
-          createdAt: string,
-          updatedAt: string,
-          locale: string,
-          contentType: {
-            sys: {
-              id: \\"myContentType\\",
-              linkType: \\"ContentType\\",
-              type: \\"Link\\"
-            }
-          }
-        };
+        __typename: \\"myContentType\\";
+
+        node_locale: string;
+
+        createdAt: string;
+
+        updatedAt?: string;
       }"
     `)
   })
 
   it("works with localized fields", () => {
     expect(format(renderContentType(contentType, true))).toMatchInlineSnapshot(`
-      "export interface IMyContentTypeFields {
+      "export interface ContentfulMyContentType {
+        id: string;
+
+        __typename: \\"myContentType\\";
+
+        node_locale: string;
+
+        createdAt: string;
+
+        updatedAt?: string;
+
         /** Symbol Field™ */
         symbolField?: LocalizedField<string> | undefined;
 
         /** Array field */
         arrayField: LocalizedField<(\\"one\\" | \\"of\\" | \\"the\\" | \\"above\\")[]>;
-      }
-
-      export interface IMyContentType extends Entry<IMyContentTypeFields> {
-        sys: {
-          id: string,
-          type: string,
-          createdAt: string,
-          updatedAt: string,
-          locale: string,
-          contentType: {
-            sys: {
-              id: \\"myContentType\\",
-              linkType: \\"ContentType\\",
-              type: \\"Link\\"
-            }
-          }
-        };
       }"
     `)
   })

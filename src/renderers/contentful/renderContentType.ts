@@ -66,6 +66,6 @@ function renderSys(sys: Sys) {
 
     createdAt: string;
 
-    updatedAt: string;
+    updatedAt?: string;
   `
 }
